@@ -564,7 +564,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 @media (max-width: 760px) {
   .wafab { width: 50px; height: 50px; left: 16px; bottom: 16px; }
   .wafab svg { width: 26px; height: 26px; }
-  .totop { left: 16px; right: auto; bottom: 78px; }
+  .totop { right: 16px; left: auto; bottom: 16px; }
   .topbar__rating { display: none; }
 }
 
@@ -583,7 +583,11 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
   z-index: 960 !important;
 }
 @media (max-width: 760px) {
-  #vapi-support-btn, .vapi-btn { transform: translateX(-50%) scale(1) !important; }
+  #vapi-support-btn, .vapi-btn {
+    bottom: 84px !important;                 /* lift above the corner buttons */
+    transform: translateX(-50%) scale(1) !important;
+    max-width: calc(100vw - 24px) !important;
+  }
 }
 
 /* ----------  Reduced motion  ---------- */
