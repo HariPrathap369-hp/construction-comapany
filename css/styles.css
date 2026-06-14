@@ -569,25 +569,32 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 }
 
 /* ===================================================================
-   VAPI VOICE ORB — center it along the bottom & enlarge a touch
-   (the widget only supports corner positions, so we override its
-   injected button. If Vapi changes its markup, adjust the selector.)
+   VOICE AI LAUNCHER (#aiCall) — our own centered pill that drives the
+   Vapi call. We hide Vapi's injected button and control everything, so
+   it is reliably tappable and positioned the same on every device.
    =================================================================== */
-#vapi-support-btn,
-.vapi-btn {
-  left: 50% !important;
-  right: auto !important;
-  bottom: 24px !important;
-  transform: translateX(-50%) scale(1.12) !important;
-  transform-origin: bottom center !important;
-  z-index: 960 !important;
+#vapi-support-btn, .vapi-btn { display: none !important; }
+
+.aifab {
+  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
+  z-index: 940; display: inline-flex; align-items: center; gap: .65rem;
+  padding: .8rem 1.25rem; border-radius: 50px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink);
+  font-family: var(--font-head); font-weight: 600; font-size: 1rem;
+  box-shadow: 0 14px 34px -10px rgba(255,140,0,.7);
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .3s;
+  max-width: calc(100vw - 24px);
 }
+.aifab:hover { transform: translateX(-50%) translateY(-3px); box-shadow: 0 18px 42px -10px rgba(255,140,0,.85); }
+.aifab:active { transform: translateX(-50%) translateY(-1px) scale(.98); }
+.aifab__ic { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; background: rgba(0,0,0,.16); }
+.aifab__ic svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
+.aifab__txt { display: flex; flex-direction: column; line-height: 1.12; text-align: left; }
+.aifab__txt small { font-family: var(--font-body); font-weight: 500; font-size: .72rem; opacity: .82; }
+.aifab.is-live { background: linear-gradient(135deg, #ff5a4d, #e2231a); color: #fff; }
+.aifab.is-live .aifab__ic { background: rgba(255,255,255,.22); }
 @media (max-width: 760px) {
-  #vapi-support-btn, .vapi-btn {
-    bottom: 84px !important;                 /* lift above the corner buttons */
-    transform: translateX(-50%) scale(1) !important;
-    max-width: calc(100vw - 24px) !important;
-  }
+  .aifab { bottom: 86px; font-size: .9rem; padding: .7rem 1.05rem; }
 }
 
 /* ----------  Reduced motion  ---------- */
