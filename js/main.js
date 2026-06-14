@@ -74,7 +74,7 @@
   }
 
   /* ----------  Animated counters  ---------- */
-  const counters = $$('.stat__num');
+  const counters = $$('.stat__num[data-count]');   /* skip non-numeric stats like "24/7" */
   function animateCount(el) {
     const target = parseFloat(el.dataset.count);
     const suffix = el.dataset.suffix || '';

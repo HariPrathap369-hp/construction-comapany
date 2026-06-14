@@ -1,10 +1,15 @@
 # MCB Brothers Construction — Website
 
-A world-class, single-page marketing website for **MCB Brothers Construction**.
-Built as a fast, dependency-free **static site** (HTML + CSS + vanilla JS) — no build
-step, no framework. It hosts for free on GitHub Pages, Netlify, Vercel, or any web host.
+A world-class, single-page marketing website for **MCB Brothers Construction** — luxury
+home builders in **Ooty & Coonoor, The Nilgiris**. Built as a fast, dependency-free
+**static site** (HTML + CSS + vanilla JS) — no build step, no framework. It hosts for
+free on GitHub Pages, Netlify, Vercel, or any web host.
 
-![Bold industrial theme](https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=70)
+![Bold industrial theme](https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1200&q=70)
+
+**Real business details already wired in:** phone `+91 98430 70880`, WhatsApp,
+address (Selas Kattary, Coonoor), Open-24-hours, the 4.9★ Google rating, and a live
+embedded Google map of the location.
 
 ## ✨ Features
 
@@ -37,21 +42,28 @@ python3 -m http.server 8000
 
 ## ✏️ Make it yours
 
-### 1. Business details (important)
-Search the project for **`EDIT YOUR DETAILS`** — the placeholders below appear in the
-top bar, the Contact section, and the footer. Update them everywhere:
+### 1. Business details — already real ✅
+The live listing details are already in `index.html` (search the top-of-file comment
+block to see them in one place):
 
-| Placeholder | Where |
+| Detail | Value |
 |---|---|
-| `(555) 123-4567` | phone (also in `tel:` links) |
-| `info@mcbbrothersconstruction.com` | email (also in `mailto:` links) |
-| `1234 Builder's Way, Suite 100, Your City, ST 00000` | address |
-| `Mon–Fri 8:00–18:00 · Sat 9:00–14:00` | hours |
-| `Lic. #000000` | license number (footer) |
-| stats: `15+`, `480+`, `2.5M`, `98%` | hero + stats — edit the `data-count` values in `index.html` |
+| Phone | `+91 98430 70880` (`tel:+919843070880`) |
+| WhatsApp | `https://wa.me/919843070880` |
+| Address | 2/112 F, Selas Kattary (P.O.), Coonoor Tk, Ooty, The Nilgiris, TN 643213 |
+| Hours | Open 24 Hours |
+| Google rating | 4.9 ★ (52 reviews) |
+| Map | live Google embed (coords `11.3349567, 76.7463351`) |
 
-> The testimonials, project names, and stats are realistic **placeholders** — swap in
-> your real clients, projects, and numbers when you have them.
+### Still placeholder — replace when ready
+- **Project photos** — currently tasteful stock luxury homes. Swap the
+  `https://images.unsplash.com/...` URLs in `index.html` for your real Google/job-site
+  photos (drop files in an `images/` folder and point to them).
+- **Testimonials** — three sample quotes. Replace with real Google reviews (the site
+  links out to all 52 reviews in the meantime).
+- **Social links** — Facebook/Instagram `href="#"` are placeholders; add your real URLs.
+- **Email** — none was listed publicly; add one wherever you see a phone/WhatsApp block
+  if you'd like to show it.
 
 ### 2. Colors
 Open `css/styles.css` and edit the tokens at the top (`:root`):
