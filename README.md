@@ -56,14 +56,19 @@ block to see them in one place):
 | Map | live Google embed (coords `11.3349567, 76.7463351`) |
 
 ### Still placeholder — replace when ready
-- **Project photos** — currently tasteful stock luxury homes. Swap the
-  `https://images.unsplash.com/...` URLs in `index.html` for your real Google/job-site
-  photos (drop files in an `images/` folder and point to them).
+- **Project photos** — the hero is your **real flagship mansion** (`images/hero-mansion.jpg`).
+  The gallery, About and CTA still use stock luxury homes — swap those
+  `https://images.unsplash.com/...` URLs in `index.html` for your own photos
+  (drop files in `images/` and point to them).
 - **Testimonials** — three sample quotes. Replace with real Google reviews (the site
   links out to all 52 reviews in the meantime).
-- **Social links** — Facebook/Instagram `href="#"` are placeholders; add your real URLs.
+- **Social links** — Facebook/Instagram currently open a business-name search as a
+  placeholder; replace those `href`s in the top bar and footer with your real page URLs.
 - **Email** — none was listed publicly; add one wherever you see a phone/WhatsApp block
   if you'd like to show it.
+- **Voice assistant (Vapi)** — the floating voice orb is wired in. Open `index.html`,
+  find `VAPI_PUBLIC_KEY`, and paste your Vapi **Public Key** (Vapi dashboard → API Keys).
+  The assistant ID is already set; until a key is added the orb stays hidden.
 
 ### 2. Colors
 Open `css/styles.css` and edit the tokens at the top (`:root`):

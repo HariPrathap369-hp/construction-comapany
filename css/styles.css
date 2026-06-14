@@ -437,7 +437,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
    BACK TO TOP
    =================================================================== */
 .totop {
-  position: fixed; right: 24px; bottom: 24px; z-index: 800;
+  position: fixed; left: 24px; bottom: 92px; z-index: 800;
   width: 50px; height: 50px; border-radius: 12px;
   background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink);
   display: grid; place-items: center; box-shadow: 0 12px 30px -10px rgba(255,140,0,.6);
@@ -564,7 +564,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 @media (max-width: 760px) {
   .wafab { width: 50px; height: 50px; left: 16px; bottom: 16px; }
   .wafab svg { width: 26px; height: 26px; }
-  .totop { right: 16px; bottom: 16px; }
+  .totop { left: 16px; right: auto; bottom: 78px; }
   .topbar__rating { display: none; }
 }
 
