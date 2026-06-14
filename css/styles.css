@@ -479,8 +479,9 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
     background: rgba(12,13,16,.98); backdrop-filter: blur(14px);
     border-bottom: 1px solid var(--line); padding: 1rem 24px 1.6rem;
     transform: translateY(-130%); transition: transform .4s var(--ease); max-height: calc(100vh - 76px); overflow-y: auto;
+    pointer-events: none;
   }
-  .nav__links.is-open { transform: translateY(0); }
+  .nav__links.is-open { transform: translateY(0); pointer-events: auto; }
   .nav__links > a:not(.btn) { padding: .95rem 0; border-bottom: 1px solid var(--line); }
   .nav__links > a:not(.btn)::after { display: none; }
   .nav__cta { margin: 1rem 0 0; justify-content: center; }
@@ -723,6 +724,42 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 @media (max-width: 760px) {
   .chat-fab { right: 16px; bottom: 16px; width: 54px; height: 54px; }
   .chatbox { right: 12px; left: 12px; width: auto; bottom: 84px; height: min(72vh, 540px); max-height: calc(100vh - 110px); }
+}
+
+/* ===================================================================
+   MOBILE TAP RELIABILITY
+   Fixes the "sometimes my tap works, sometimes it doesn't" problem:
+   - touch-action: manipulation removes the 300ms delay + double-tap-zoom
+     interception that swallows quick taps.
+   - decorative pulse rings / icons never intercept the touch.
+   - on touch devices, controls don't lift/scale on "hover" (which moves
+     them out from under your finger and eats the first tap).
+   =================================================================== */
+a, button, .btn, .chip, .chip-quick, .minibtn, .msg__btn,
+.wafab, .totop, .chat-fab, #mcb-ai-orb, #mcb-ai-orb button,
+.chatbox__form button, .chatbox__close, .topbar__soc,
+.footer__social a, .nav__toggle, .card__link, .contact__link {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255,180,0,.25);
+}
+
+/* Decorative bits must never steal a tap from the real control. */
+#mcb-ai-orb button::after,
+.chat-fab::after,
+.wafab::after,
+.chat-fab__ico { pointer-events: none; }
+
+/* Give the floating controls a comfortable minimum tap target. */
+.chat-fab, .wafab, .totop, #mcb-ai-orb button { min-width: 48px; min-height: 48px; }
+
+@media (hover: none) {
+  .btn--accent:hover, .btn--ghost:hover,
+  .wafab:hover, .totop:hover, .chat-fab:hover,
+  #mcb-ai-orb button:hover, .chatbox__form button:hover,
+  .card:hover, .msg__btn:hover, .chip-quick:hover {
+    transform: none;
+  }
+  .project:hover img { transform: scale(1); }
 }
 
 /* ----------  Reduced motion  ---------- */
