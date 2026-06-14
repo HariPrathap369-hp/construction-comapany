@@ -609,48 +609,60 @@
 
   <script src="js/main.js"></script>
 
-  <!-- ===================== VAPI VOICE ASSISTANT (Web SDK · floating bottom-center orb) ===================== -->
-  <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/index.umd.js"></script>
-  <script>
-    (function () {
-      // Public IDs — safe to embed. Public key: Vapi dashboard → API Keys → "Public Key".
-      var PUBLIC_KEY   = "9a8c87d6-6c6f-4652-b069-e72d6893a795";
-      var ASSISTANT_ID = "c9f41513-fd33-4b62-b95a-5b0fa6300779";
+  <!-- ===================== VAPI VOICE ASSISTANT (Web SDK · in-page orb) =====================
+       Loads the official @vapi-ai/web SDK as an ES module from esm.sh (pinned).
+       The whole orb is the tap target, so it works reliably on desktop + mobile. -->
+  <script type="module">
+    import Vapi from "https://esm.sh/@vapi-ai/web@2.5.2";
 
-      window.addEventListener("load", function () {
-        var orb = document.getElementById("mcb-ai-orb");
-        var btn = document.getElementById("mcb-ai-start");
-        var statusEl = document.getElementById("mcb-ai-status");
-        if (!btn) return;
-        function setStatus(t){ if (statusEl) statusEl.textContent = t || ""; }
+    // Public IDs — safe to embed in the browser.
+    const PUBLIC_KEY   = "9a8c87d6-6c6f-4652-b069-e72d6893a795";
+    const ASSISTANT_ID = "c9f41513-fd33-4b62-b95a-5b0fa6300779";
 
-        // The UMD build may expose the class directly or under .default
-        var Vapi = window.Vapi && (window.Vapi.default || window.Vapi);
-        if (typeof Vapi !== "function") { setStatus("Assistant failed to load."); return; }
+    const orb      = document.getElementById("mcb-ai-orb");
+    const btn      = document.getElementById("mcb-ai-start");
+    const statusEl = document.getElementById("mcb-ai-status");
+    const setStatus = (t) => { if (statusEl) statusEl.textContent = t || ""; };
 
-        var vapi;
-        try { vapi = new Vapi(PUBLIC_KEY); }
-        catch (e) { console.error(e); setStatus("Assistant failed to load."); return; }
+    if (orb && btn) {
+      let vapi, live = false, busy = false;
+      try {
+        vapi = new Vapi(PUBLIC_KEY);
+      } catch (e) {
+        console.error("[Vapi] init failed", e);
+        setStatus("Assistant unavailable — please call us instead.");
+      }
 
-        var live = false;
-        vapi.on("call-start", function () { live = true;  orb.classList.add("is-live");    setStatus("Live — start speaking"); });
-        vapi.on("call-end",   function () { live = false; orb.classList.remove("is-live"); setStatus(""); });
-        vapi.on("error", function (e) {
-          live = false; orb.classList.remove("is-live");
-          var m = (e && (e.errorMsg || e.message || (e.error && (e.error.message || e.error)))) || "please try again";
+      if (vapi) {
+        vapi.on("call-start", () => { live = true;  busy = false; orb.classList.add("is-live");    setStatus("Live — start speaking"); });
+        vapi.on("call-end",   () => { live = false; busy = false; orb.classList.remove("is-live"); setStatus("Tap to talk again"); });
+        vapi.on("error", (e) => {
+          live = false; busy = false; orb.classList.remove("is-live");
+          const m = (e && (e.errorMsg || e.message || (e.error && (e.error.message || e.error)))) || "please try again";
           setStatus("Error: " + m); console.error("[Vapi] error", e);
         });
 
-        btn.addEventListener("click", async function () {
+        async function toggle() {
+          if (busy) return;
           if (live) { try { vapi.stop(); } catch (e) {} return; }
           if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            setStatus("Open the site in Safari/Chrome to allow the mic"); return;
+            setStatus("Open in Chrome or Safari to allow the microphone."); return;
           }
-          try { setStatus("Connecting…"); await vapi.start(ASSISTANT_ID); }
-          catch (e) { console.error(e); setStatus("Could not start. Tap to retry."); }
-        });
-      });
-    })();
+          busy = true;
+          setStatus("Connecting…");
+          try {
+            await vapi.start(ASSISTANT_ID);
+          } catch (e) {
+            busy = false; console.error("[Vapi] start failed", e);
+            setStatus("Could not start — check mic permission, then tap again.");
+          }
+        }
+
+        // Make the whole orb (button + label) a tap target — easier to hit on mobile.
+        orb.style.cursor = "pointer";
+        orb.addEventListener("click", toggle);
+      }
+    }
   </script>
 </body>
 </html>
