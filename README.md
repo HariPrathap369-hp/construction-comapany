@@ -56,12 +56,11 @@ block to see them in one place):
 | Map | live Google embed (coords `11.3349567, 76.7463351`) |
 
 ### Still placeholder — replace when ready
-- **Project photos** — the hero is your **real flagship mansion** (`images/hero-mansion.jpg`).
-  The gallery, About and CTA still use stock luxury homes — swap those
-  `https://images.unsplash.com/...` URLs in `index.html` for your own photos
-  (drop files in `images/` and point to them).
-- **Testimonials** — three sample quotes. Replace with real Google reviews (the site
-  links out to all 52 reviews in the meantime).
+- **Project photos** — ✅ all real now (hero, gallery, About and CTA use your own photos
+  in `images/`). Add more anytime by dropping files in `images/` and pointing the
+  `<img>`/background URLs at them.
+- **Testimonials** — ✅ now your three real 5★ Google reviews (Malathi, Sathish,
+  Balachandran). Swap or add more anytime.
 - **Social links** — Facebook/Instagram currently open a business-name search as a
   placeholder; replace those `href`s in the top bar and footer with your real page URLs.
 - **Email** — none was listed publicly; add one wherever you see a phone/WhatsApp block

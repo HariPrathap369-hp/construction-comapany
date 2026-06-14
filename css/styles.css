@@ -321,7 +321,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 .chip:hover { color: var(--text); border-color: #3a3f49; }
 .chip.is-active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
-.projects__grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 240px; gap: 1.3rem; }
+.projects__grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 340px; gap: 1.3rem; }
 .project {
   position: relative; border-radius: var(--radius); overflow: hidden; cursor: pointer;
   transition: transform .45s var(--ease), opacity .45s, filter .35s; grid-row: span 1;
@@ -468,7 +468,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
   .about__grid, .contact__grid { grid-template-columns: 1fr; gap: 2.6rem; }
   .about__media img { aspect-ratio: 16/10; }
   .footer__grid { grid-template-columns: 1fr 1fr; }
-  .projects__grid { grid-auto-rows: 220px; }
+  .projects__grid { grid-auto-rows: 300px; }
 }
 
 @media (max-width: 760px) {
