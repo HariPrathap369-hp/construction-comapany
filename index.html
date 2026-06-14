@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=11" />
+  <link rel="stylesheet" href="css/styles.css?v=12" />
 </head>
 
 <body>
@@ -639,8 +639,8 @@
     </form>
   </section>
 
-  <script src="js/main.js?v=11"></script>
-  <script src="js/chat.js?v=11"></script>
+  <script src="js/main.js?v=12"></script>
+  <script src="js/chat.js?v=12"></script>
 
   <!-- ===================== VAPI VOICE ASSISTANT (Web SDK · in-page orb) =====================
        The tap handler (classic script below) attaches IMMEDIATELY and is not gated on the
@@ -663,6 +663,24 @@
       if (!orb || !btn) return;
       function setStatus(t) { if (statusEl) statusEl.textContent = t || ""; }
 
+      // Pull a human-readable reason out of Vapi/Daily error shapes (which vary a lot)
+      // instead of printing "[object Object]".
+      function describeErr(e) {
+        if (!e) return "please try again";
+        if (typeof e === "string") return e;
+        var c = e.errorMsg || e.msg || e.message
+             || (e.error && (e.error.message || e.error.msg || (typeof e.error === "string" ? e.error : "")))
+             || (e.response && (e.response.message || e.response.statusText))
+             || e.type || e.stage || "";
+        if (!c) {
+          try { c = JSON.stringify(e); } catch (_) { c = String(e); }
+          if (c === "{}" || c === "[object Object]") {
+            try { c = "fields: " + Object.keys(e).join(", "); } catch (_) { c = String(e); }
+          }
+        }
+        return String(c).slice(0, 160);
+      }
+
       var vapi = null, live = false, busy = false, ready = false, pendingStart = false;
 
       function initVapi() {
@@ -678,8 +696,8 @@
         vapi.on("call-end",   function () { live = false; busy = false; orb.classList.remove("is-live"); setStatus("Tap to talk again"); });
         vapi.on("error", function (e) {
           live = false; busy = false; orb.classList.remove("is-live");
-          var m = (e && (e.errorMsg || e.message || (e.error && (e.error.message || e.error)))) || "please try again";
-          setStatus("Error: " + m); console.error("[Vapi] error", e);
+          setStatus("Couldn't connect: " + describeErr(e));
+          console.error("[Vapi] error", e);
         });
         ready = true;
         if (pendingStart) { pendingStart = false; doStart(); }
@@ -696,11 +714,11 @@
           var p = vapi.start(ASSISTANT_ID);
           if (p && p.catch) p.catch(function (e) {
             busy = false; console.error("[Vapi] start failed", e);
-            setStatus("Couldn't start — allow the mic, then tap again.");
+            setStatus("Couldn't start: " + describeErr(e));
           });
         } catch (e) {
           busy = false; console.error("[Vapi] start threw", e);
-          setStatus("Couldn't start — allow the mic, then tap again.");
+          setStatus("Couldn't start: " + describeErr(e));
         }
       }
 
