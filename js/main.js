@@ -145,10 +145,13 @@
     }, { once: true });
   });
 
-  /* ----------  Contact form (front-end validation + UX)  ----------
-     NOTE: This does not send email by itself. To receive submissions,
-     connect the form to a service — see README.md (Formspree / Netlify).
-  ------------------------------------------------------------------- */
+  /* ----------  Contact form (validation + send to email via FormSubmit)  ----------
+     Submissions are emailed through FormSubmit (no backend needed). The first
+     submission triggers a one-time activation email to the owner address below;
+     click "Activate" once and every later submission is delivered automatically.
+  --------------------------------------------------------------------------------- */
+  const FORM_ENDPOINT = 'https://formsubmit.co/ajax/mcbbrothers@gmail.com';
+
   const form = $('#quoteForm');
   const note = $('#formNote');
 
@@ -172,10 +175,33 @@
         return;
       }
 
-      const name = form.elements['name'].value.trim().split(' ')[0];
-      note.textContent = `Thanks, ${name}! Your request has been received — we'll be in touch within one business day.`;
-      note.className = 'form__note ok';
-      form.reset();
+      const firstName = form.elements['name'].value.trim().split(' ')[0];
+      const submitBtn = form.querySelector('button[type="submit"]');
+      note.textContent = 'Sending…';
+      note.className = 'form__note';
+      if (submitBtn) submitBtn.disabled = true;
+
+      const data = new FormData(form);
+      data.append('_subject', 'New quote request — MCB Brothers website');
+      data.append('_template', 'table');
+      data.append('_captcha', 'false');
+
+      fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: data
+      })
+        .then(r => r.json())
+        .then(() => {
+          note.textContent = `Thanks, ${firstName}! Your request has been sent — we'll be in touch within one business day.`;
+          note.className = 'form__note ok';
+          form.reset();
+        })
+        .catch(() => {
+          note.textContent = 'Sorry, that didn’t go through — please call or WhatsApp us at +91 98430 70880.';
+          note.className = 'form__note err';
+        })
+        .finally(() => { if (submitBtn) submitBtn.disabled = false; });
     });
 
     // Clear the invalid state as the user types

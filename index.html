@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=10" />
+  <link rel="stylesheet" href="css/styles.css?v=11" />
 </head>
 
 <body>
@@ -492,6 +492,9 @@
         <div class="contact__formwrap reveal">
           <form class="form" id="quoteForm" novalidate>
             <h3>Request a Free Quote</h3>
+            <!-- Honeypot: hidden anti-spam trap. Humans never see/fill it; bots do. -->
+            <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true"
+                   style="position:absolute !important; left:-9999px !important; width:1px; height:1px; opacity:0" />
             <div class="form__row">
               <label class="field">
                 <span>Full Name *</span>
@@ -636,8 +639,8 @@
     </form>
   </section>
 
-  <script src="js/main.js?v=10"></script>
-  <script src="js/chat.js?v=10"></script>
+  <script src="js/main.js?v=11"></script>
+  <script src="js/chat.js?v=11"></script>
 
   <!-- ===================== VAPI VOICE ASSISTANT (Web SDK · in-page orb) =====================
        The tap handler (classic script below) attaches IMMEDIATELY and is not gated on the
