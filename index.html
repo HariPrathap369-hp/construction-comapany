@@ -598,9 +598,17 @@
        Get it from the Vapi dashboard → API Keys → "Public Key".
        Until a real key is set, the orb stays hidden instead of throwing errors. */
     var VAPI_PUBLIC_KEY = "9a8c87d6-6c6f-4652-b069-e72d6893a795";
+    function vapiToast(msg){
+      var t=document.getElementById('vapiToast');
+      if(!t){t=document.createElement('div');t.id='vapiToast';
+        t.style.cssText='position:fixed;left:50%;bottom:152px;transform:translateX(-50%);max-width:90vw;background:#1c1f26;color:#fff;border:1px solid #2a2e37;border-radius:10px;padding:.7rem 1rem;font:500 14px/1.45 Inter,system-ui,sans-serif;z-index:1001;box-shadow:0 10px 30px rgba(0,0,0,.5);text-align:center;transition:opacity .3s';
+        document.body.appendChild(t);}
+      t.textContent=msg; t.style.opacity='1';
+      clearTimeout(window.__vt); window.__vt=setTimeout(function(){t.style.opacity='0';},6500);
+    }
     window.addEventListener("load", function () {
       if (!window.vapiSDK || VAPI_PUBLIC_KEY === "YOUR_PUBLIC_KEY") return;
-      window.vapiSDK.run({
+      var vapi = window.vapiSDK.run({
         apiKey: VAPI_PUBLIC_KEY,
         assistant: "c9f41513-fd33-4b62-b95a-5b0fa6300779",
         config: {
@@ -630,6 +638,21 @@
           }
         }
       });
+
+      // Surface call lifecycle + errors on-screen (helps diagnose mic/permission/key issues)
+      if (vapi && typeof vapi.on === "function") {
+        vapi.on("call-start", function () { vapiToast("Connected — start speaking!"); });
+        vapi.on("call-end",   function () { vapiToast("Call ended."); });
+        vapi.on("error", function (e) {
+          var m = (e && (e.errorMsg || e.message || (e.error && (e.error.message || e.error)))) || "Could not start the call";
+          vapiToast("Assistant: " + m);
+          console.error("[Vapi] error", e);
+        });
+      }
+      // Most mobile failures are mic permission — confirm the browser can use a mic at all.
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        vapiToast("This browser is blocking microphone access. Open the site in Safari or Chrome (not inside another app).");
+      }
     });
   </script>
 </body>
