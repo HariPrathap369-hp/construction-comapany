@@ -5,16 +5,17 @@
   publish = "."
   # No build command needed for a plain HTML/CSS/JS site.
 
-# Long cache for static assets (safe: edit URLs or filenames to bust)
+# Always revalidate CSS/JS so edits show up immediately (cheap 304s via ETag).
+# We also append ?v=N to the css/js URLs in index.html to bust any stale cache.
 [[headers]]
   for = "/css/*"
   [headers.values]
-    Cache-Control = "public, max-age=604800"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
   for = "/js/*"
   [headers.values]
-    Cache-Control = "public, max-age=604800"
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 # Sensible baseline security headers
 [[headers]]
