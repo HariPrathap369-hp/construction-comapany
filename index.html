@@ -305,20 +305,11 @@
 
         <div class="projects__grid" id="projectsGrid">
           <figure class="project reveal" data-cat="villas">
-            <img src="images/hero-mansion.jpg" alt="Grand white colonial mansion built by MCB Brothers" loading="lazy" />
+            <img src="images/villa-coonoor.png" alt="Grand white colonial mansion built by MCB Brothers" loading="lazy" />
             <figcaption>
               <span class="project__cat">Villas</span>
               <h3>Grand Colonial Mansion</h3>
               <p>Flagship neoclassical build, Coonoor</p>
-            </figcaption>
-          </figure>
-
-          <figure class="project reveal" data-cat="villas">
-            <img src="images/villa-coonoor.png" alt="Hillside colonial villa with gated entrance" loading="lazy" />
-            <figcaption>
-              <span class="project__cat">Villas</span>
-              <h3>Hillside Colonial Villa</h3>
-              <p>Turnkey villa, The Nilgiris</p>
             </figcaption>
           </figure>
 
@@ -423,7 +414,7 @@
 
     <!-- ===================== CTA BAND ===================== -->
     <section class="ctaband">
-      <div class="ctaband__bg" style="background-image:url('images/villa-coonoor.png')"></div>
+      <div class="ctaband__bg" style="background-image:url('images/hero-mansion.jpg')"></div>
       <div class="ctaband__overlay"></div>
       <div class="container ctaband__inner reveal">
         <h2>Ready to build your<br /><span class="accent">dream home?</span></h2>
@@ -613,8 +604,30 @@
         apiKey: VAPI_PUBLIC_KEY,
         assistant: "c9f41513-fd33-4b62-b95a-5b0fa6300779",
         config: {
+          // CSS in styles.css (#vapi-support-btn) re-centers this to the bottom-middle.
           position: "bottom-right",
-          theme: { primary: "#ffb400", secondary: "#0e0f12" }
+          offset: "26px",
+          idle: {
+            color: "#ffb400",
+            type: "pill",
+            title: "Speak to our AI Assistant",
+            subtitle: "Tap to start talking",
+            icon: "https://unpkg.com/lucide-static@latest/icons/mic.svg"
+          },
+          loading: {
+            color: "#ffb400",
+            type: "pill",
+            title: "Connecting…",
+            subtitle: "One moment",
+            icon: "https://unpkg.com/lucide-static@latest/icons/loader.svg"
+          },
+          active: {
+            color: "#e2231a",
+            type: "pill",
+            title: "Listening — tap to end",
+            subtitle: "Call in progress",
+            icon: "https://unpkg.com/lucide-static@latest/icons/phone-off.svg"
+          }
         }
       });
     });

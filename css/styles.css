@@ -321,7 +321,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 .chip:hover { color: var(--text); border-color: #3a3f49; }
 .chip.is-active { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 
-.projects__grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-auto-rows: 340px; gap: 1.3rem; }
+.projects__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); grid-auto-rows: 320px; gap: 1.3rem; }
 .project {
   position: relative; border-radius: var(--radius); overflow: hidden; cursor: pointer;
   transition: transform .45s var(--ease), opacity .45s, filter .35s; grid-row: span 1;
@@ -566,6 +566,24 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
   .wafab svg { width: 26px; height: 26px; }
   .totop { left: 16px; right: auto; bottom: 78px; }
   .topbar__rating { display: none; }
+}
+
+/* ===================================================================
+   VAPI VOICE ORB — center it along the bottom & enlarge a touch
+   (the widget only supports corner positions, so we override its
+   injected button. If Vapi changes its markup, adjust the selector.)
+   =================================================================== */
+#vapi-support-btn,
+.vapi-btn {
+  left: 50% !important;
+  right: auto !important;
+  bottom: 24px !important;
+  transform: translateX(-50%) scale(1.12) !important;
+  transform-origin: bottom center !important;
+  z-index: 960 !important;
+}
+@media (max-width: 760px) {
+  #vapi-support-btn, .vapi-btn { transform: translateX(-50%) scale(1) !important; }
 }
 
 /* ----------  Reduced motion  ---------- */
