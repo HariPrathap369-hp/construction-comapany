@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=6" />
+  <link rel="stylesheet" href="css/styles.css?v=7" />
 </head>
 
 <body>
@@ -636,8 +636,8 @@
     </form>
   </section>
 
-  <script src="js/main.js?v=6"></script>
-  <script src="js/chat.js?v=6"></script>
+  <script src="js/main.js?v=7"></script>
+  <script src="js/chat.js?v=7"></script>
 
   <!-- ===================== VAPI VOICE ASSISTANT (Web SDK · in-page orb) =====================
        The tap handler (classic script below) attaches IMMEDIATELY and is not gated on the
@@ -701,22 +701,39 @@
         }
       }
 
+      function proceed() {
+        if (ready) { doStart(); return; }
+        pendingStart = true; setStatus("Loading assistant…"); initVapi();
+        setTimeout(function () {
+          if (pendingStart && !ready) { pendingStart = false; busy = false; setStatus("Slow connection — tap again, or call us."); }
+        }, 9000);
+      }
+
       function onTap() {
         if (busy) return;
         if (live) { try { vapi.stop(); } catch (e) {} return; }
-        if (!window.isSecureContext) { setStatus("Open the https:// site to use voice."); return; }
+        if (!window.isSecureContext) { setStatus("Open the https:// link to use voice."); return; }
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          setStatus("Use Chrome or Safari to allow the microphone."); return;
+          setStatus("This browser blocks the mic — open the site in Chrome or Safari."); return;
         }
-        if (!ready) {
-          // SDK still loading — queue the start and show feedback so it never feels dead.
-          pendingStart = true; setStatus("Loading assistant…"); initVapi();
-          setTimeout(function () {
-            if (pendingStart && !ready) { pendingStart = false; setStatus("Slow connection — tap again, or call us."); }
-          }, 9000);
-          return;
-        }
-        doStart();
+        busy = true;
+        setStatus("Connecting…");
+        // Ask for the mic INSIDE the tap gesture — required by iOS Safari, and it
+        // surfaces an exact reason if the mic is blocked (e.g. an in-app browser).
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+          stream.getTracks().forEach(function (t) { t.stop(); });  // release probe; Vapi opens its own
+          proceed();
+        }).catch(function (err) {
+          busy = false;
+          var n = (err && err.name) || "";
+          if (n === "NotAllowedError" || n === "SecurityError")
+            setStatus("Mic blocked. If you opened this from inside another app, tap ⋯ → Open in Chrome/Safari.");
+          else if (n === "NotFoundError" || n === "OverconstrainedError")
+            setStatus("No microphone available on this device.");
+          else
+            setStatus("Mic error (" + (n || "unknown") + "). Try Chrome or Safari.");
+          console.error("[Vapi] getUserMedia failed", err);
+        });
       }
 
       // Attach to BOTH the native button (most reliable on iOS) and the container
