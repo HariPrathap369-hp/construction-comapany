@@ -437,7 +437,7 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
    BACK TO TOP
    =================================================================== */
 .totop {
-  position: fixed; left: 24px; bottom: 92px; z-index: 800;
+  position: fixed; right: 24px; bottom: 24px; z-index: 800;
   width: 50px; height: 50px; border-radius: 12px;
   background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink);
   display: grid; place-items: center; box-shadow: 0 12px 30px -10px rgba(255,140,0,.6);
@@ -569,32 +569,44 @@ svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; 
 }
 
 /* ===================================================================
-   VOICE AI LAUNCHER (#aiCall) — our own centered pill that drives the
-   Vapi call. We hide Vapi's injected button and control everything, so
-   it is reliably tappable and positioned the same on every device.
+   VOICE AI ORB (#mcb-ai-orb) — Vapi Web SDK, floating bottom-centre.
+   (A fixed dead-centre orb would cover page content, so we float it.)
    =================================================================== */
-#vapi-support-btn, .vapi-btn { display: none !important; }
-
-.aifab {
-  position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%);
-  z-index: 940; display: inline-flex; align-items: center; gap: .65rem;
-  padding: .8rem 1.25rem; border-radius: 50px; border: none; cursor: pointer;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink);
-  font-family: var(--font-head); font-weight: 600; font-size: 1rem;
-  box-shadow: 0 14px 34px -10px rgba(255,140,0,.7);
-  transition: transform .25s var(--ease), box-shadow .25s var(--ease), background .3s;
-  max-width: calc(100vw - 24px);
+#mcb-ai-orb {
+  position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+  z-index: 940; display: flex; flex-direction: column; align-items: center; gap: 9px;
+  font-family: var(--font-body); user-select: none; pointer-events: none;
 }
-.aifab:hover { transform: translateX(-50%) translateY(-3px); box-shadow: 0 18px 42px -10px rgba(255,140,0,.85); }
-.aifab:active { transform: translateX(-50%) translateY(-1px) scale(.98); }
-.aifab__ic { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; border-radius: 50%; background: rgba(0,0,0,.16); }
-.aifab__ic svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; }
-.aifab__txt { display: flex; flex-direction: column; line-height: 1.12; text-align: left; }
-.aifab__txt small { font-family: var(--font-body); font-weight: 500; font-size: .72rem; opacity: .82; }
-.aifab.is-live { background: linear-gradient(135deg, #ff5a4d, #e2231a); color: #fff; }
-.aifab.is-live .aifab__ic { background: rgba(255,255,255,.22); }
+#mcb-ai-orb > * { pointer-events: auto; }
+#mcb-ai-orb button {
+  width: 104px; height: 104px; border-radius: 999px; border: 0; cursor: pointer; padding: 0; position: relative;
+  background: radial-gradient(circle at 32% 28%, #fff 0%, #ffe39a 14%, #ffb400 40%, #b35e00 100%);
+  box-shadow: 0 18px 50px -8px rgba(255,140,0,.6), inset 0 -10px 22px rgba(0,0,0,.28), inset 0 6px 16px rgba(255,255,255,.4);
+  transition: transform .2s var(--ease);
+}
+#mcb-ai-orb button::after {
+  content: ""; position: absolute; inset: -7px; border-radius: 999px;
+  border: 2px solid rgba(255,180,0,.55); animation: orbpulse 2.4s ease-out infinite;
+}
+@keyframes orbpulse { 0% { transform: scale(.9); opacity: .7; } 100% { transform: scale(1.18); opacity: 0; } }
+#mcb-ai-orb button:hover { transform: translateY(-3px); }
+#mcb-ai-orb button:active { transform: scale(.97); }
+#mcb-ai-orb .label {
+  font-family: var(--font-head); font-weight: 600; font-size: 14px; letter-spacing: .02em;
+  color: var(--accent-ink); background: var(--accent);
+  padding: 7px 14px; border-radius: 999px; box-shadow: 0 10px 24px rgba(0,0,0,.35); white-space: nowrap;
+}
+#mcb-ai-orb .status { font-size: 12px; color: var(--muted); min-height: 14px; text-align: center; }
+#mcb-ai-orb.is-live button {
+  background: radial-gradient(circle at 32% 28%, #fff 0%, #ff9a8d 14%, #e2231a 60%, #7a0f0a 100%);
+  box-shadow: 0 18px 50px -8px rgba(226,35,26,.6), inset 0 -10px 22px rgba(0,0,0,.28);
+}
+#mcb-ai-orb.is-live button::after { border-color: rgba(226,35,26,.6); animation-duration: 1.3s; }
+#mcb-ai-orb.is-live .label { background: #e2231a; color: #fff; }
 @media (max-width: 760px) {
-  .aifab { bottom: 86px; font-size: .9rem; padding: .7rem 1.05rem; }
+  #mcb-ai-orb { bottom: 78px; gap: 7px; }
+  #mcb-ai-orb button { width: 82px; height: 82px; }
+  #mcb-ai-orb .label { font-size: 13px; }
 }
 
 /* ----------  Reduced motion  ---------- */

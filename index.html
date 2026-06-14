@@ -581,13 +581,12 @@
     </div>
   </footer>
 
-  <!-- Voice AI launcher (drives the Vapi call) -->
-  <button class="aifab" id="aiCall" type="button" aria-label="Speak to our AI assistant">
-    <span class="aifab__ic" aria-hidden="true">
-      <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3z"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
-    </span>
-    <span class="aifab__txt"><b id="aiCallTitle">Speak to our AI Assistant</b><small id="aiCallSub">Tap to start talking</small></span>
-  </button>
+  <!-- Voice AI orb (Vapi Web SDK) -->
+  <div id="mcb-ai-orb">
+    <button id="mcb-ai-start" type="button" aria-label="Speak to our AI Assistant"></button>
+    <div class="label">Speak to our AI Assistant</div>
+    <div class="status" id="mcb-ai-status" aria-live="polite"></div>
+  </div>
 
   <!-- Floating WhatsApp + Back to top -->
   <a href="https://wa.me/919843070880" class="wafab" target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
@@ -599,69 +598,45 @@
 
   <script src="js/main.js"></script>
 
-  <!-- ===================== VAPI VOICE ASSISTANT (floating orb, bottom-right) ===================== -->
-  <script src="https://cdn.jsdelivr.net/gh/VapiAI/html-script-tag@latest/dist/assets/index.js" defer></script>
+  <!-- ===================== VAPI VOICE ASSISTANT (Web SDK · floating bottom-center orb) ===================== -->
+  <script src="https://cdn.jsdelivr.net/npm/@vapi-ai/web@latest/dist/index.umd.js"></script>
   <script>
-    /* 🔑 Paste your Vapi PUBLIC key below to switch the voice orb on.
-       Get it from the Vapi dashboard → API Keys → "Public Key".
-       Until a real key is set, the orb stays hidden instead of throwing errors. */
-    /* Both IDs below are public (safe to embed). PUBLIC key: Vapi dashboard → API Keys → "Public Key". */
-    var VAPI_PUBLIC_KEY   = "9a8c87d6-6c6f-4652-b069-e72d6893a795";
-    var VAPI_ASSISTANT_ID = "c9f41513-fd33-4b62-b95a-5b0fa6300779";
-
-    function vapiToast(msg){
-      var t=document.getElementById('vapiToast');
-      if(!t){t=document.createElement('div');t.id='vapiToast';
-        t.style.cssText='position:fixed;left:50%;bottom:152px;transform:translateX(-50%);max-width:90vw;background:#1c1f26;color:#fff;border:1px solid #2a2e37;border-radius:10px;padding:.7rem 1rem;font:500 14px/1.45 Inter,system-ui,sans-serif;z-index:1001;box-shadow:0 10px 30px rgba(0,0,0,.5);text-align:center;transition:opacity .3s';
-        document.body.appendChild(t);}
-      t.textContent=msg; t.style.opacity='1';
-      clearTimeout(window.__vt); window.__vt=setTimeout(function(){t.style.opacity='0';},6500);
-    }
-
     (function () {
-      var vapi = null, live = false, btn, titleEl, subEl;
-
-      function setLive(on){
-        live = on;
-        if (btn) btn.classList.toggle("is-live", on);
-        if (titleEl) titleEl.textContent = on ? "Listening — tap to end" : "Speak to our AI Assistant";
-        if (subEl)   subEl.textContent   = on ? "Call in progress"      : "Tap to start talking";
-      }
-
-      function initVapi(){
-        if (vapi) return vapi;
-        if (!window.vapiSDK || VAPI_PUBLIC_KEY === "YOUR_PUBLIC_KEY") return null;
-        try { vapi = window.vapiSDK.run({ apiKey: VAPI_PUBLIC_KEY, assistant: VAPI_ASSISTANT_ID }); }
-        catch (e) { vapiToast("Voice assistant failed to load: " + (e && e.message || e)); return null; }
-        var def = document.getElementById("vapi-support-btn"); if (def) def.style.display = "none";
-        if (vapi && typeof vapi.on === "function") {
-          vapi.on("call-start", function () { setLive(true); });
-          vapi.on("call-end",   function () { setLive(false); });
-          vapi.on("error", function (e) {
-            var m = (e && (e.errorMsg || e.message || (e.error && (e.error.message || e.error)))) || "Could not connect";
-            vapiToast("Assistant: " + m); setLive(false); console.error("[Vapi] error", e);
-          });
-        }
-        return vapi;
-      }
+      // Public IDs — safe to embed. Public key: Vapi dashboard → API Keys → "Public Key".
+      var PUBLIC_KEY   = "9a8c87d6-6c6f-4652-b069-e72d6893a795";
+      var ASSISTANT_ID = "c9f41513-fd33-4b62-b95a-5b0fa6300779";
 
       window.addEventListener("load", function () {
-        btn = document.getElementById("aiCall");
-        titleEl = document.getElementById("aiCallTitle");
-        subEl = document.getElementById("aiCallSub");
-        initVapi();                       // initialise early when the SDK is ready
-
+        var orb = document.getElementById("mcb-ai-orb");
+        var btn = document.getElementById("mcb-ai-start");
+        var statusEl = document.getElementById("mcb-ai-status");
         if (!btn) return;
-        btn.addEventListener("click", function () {
-          var v = vapi || initVapi();
-          if (!v || typeof v.start !== "function") { vapiToast("Assistant is still loading — tap again in a second."); return; }
+        function setStatus(t){ if (statusEl) statusEl.textContent = t || ""; }
+
+        // The UMD build may expose the class directly or under .default
+        var Vapi = window.Vapi && (window.Vapi.default || window.Vapi);
+        if (typeof Vapi !== "function") { setStatus("Assistant failed to load."); return; }
+
+        var vapi;
+        try { vapi = new Vapi(PUBLIC_KEY); }
+        catch (e) { console.error(e); setStatus("Assistant failed to load."); return; }
+
+        var live = false;
+        vapi.on("call-start", function () { live = true;  orb.classList.add("is-live");    setStatus("Live — start speaking"); });
+        vapi.on("call-end",   function () { live = false; orb.classList.remove("is-live"); setStatus(""); });
+        vapi.on("error", function (e) {
+          live = false; orb.classList.remove("is-live");
+          var m = (e && (e.errorMsg || e.message || (e.error && (e.error.message || e.error)))) || "please try again";
+          setStatus("Error: " + m); console.error("[Vapi] error", e);
+        });
+
+        btn.addEventListener("click", async function () {
+          if (live) { try { vapi.stop(); } catch (e) {} return; }
           if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            vapiToast("Your browser is blocking the microphone. Open the site directly in Safari or Chrome — not inside another app."); return;
+            setStatus("Open the site in Safari/Chrome to allow the mic"); return;
           }
-          if (live) { try { v.stop(); } catch (e) {} return; }
-          if (subEl) subEl.textContent = "Connecting…";
-          try { v.start(VAPI_ASSISTANT_ID); }
-          catch (e) { vapiToast("Could not start the call: " + (e && e.message || e)); if (subEl) subEl.textContent = "Tap to start talking"; }
+          try { setStatus("Connecting…"); await vapi.start(ASSISTANT_ID); }
+          catch (e) { console.error(e); setStatus("Could not start. Tap to retry."); }
         });
       });
     })();
