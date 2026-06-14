@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=3" />
+  <link rel="stylesheet" href="css/styles.css?v=4" />
 </head>
 
 <body>
@@ -609,7 +609,35 @@
     <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
   </button>
 
-  <script src="js/main.js?v=3"></script>
+  <!-- ===================== CHATBOT WIDGET ===================== -->
+  <button class="chat-fab" id="chatFab" type="button" aria-label="Chat with us" aria-expanded="false" aria-controls="chatbox">
+    <svg class="chat-fab__ico chat-fab__open" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-8.5 8.5 8.5 8.5 0 0 1-3.8-.9L3 21l1.9-5.7a8.5 8.5 0 0 1-.9-3.8A8.38 8.38 0 0 1 12.5 3 8.38 8.38 0 0 1 21 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg>
+    <svg class="chat-fab__ico chat-fab__close" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+
+  <section class="chatbox" id="chatbox" aria-label="Chat with MCB Brothers" hidden>
+    <header class="chatbox__head">
+      <span class="chatbox__avatar" aria-hidden="true">M</span>
+      <div class="chatbox__id">
+        <strong>MCB Brothers</strong>
+        <em><span class="chatbox__dot"></span> Online · replies instantly</em>
+      </div>
+      <button class="chatbox__close" id="chatClose" type="button" aria-label="Close chat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </header>
+    <div class="chatbox__log" id="chatLog"></div>
+    <div class="chatbox__quick" id="chatQuick"></div>
+    <form class="chatbox__form" id="chatForm" autocomplete="off">
+      <input id="chatInput" type="text" name="msg" placeholder="Type your message…" aria-label="Type your message" />
+      <button type="submit" aria-label="Send message">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+      </button>
+    </form>
+  </section>
+
+  <script src="js/main.js?v=4"></script>
+  <script src="js/chat.js?v=4"></script>
 
   <!-- ===================== VAPI VOICE ASSISTANT (Web SDK · in-page orb) =====================
        Loads the official @vapi-ai/web SDK as an ES module from esm.sh (pinned).
