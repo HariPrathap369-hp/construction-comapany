@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=8" />
+  <link rel="stylesheet" href="css/styles.css?v=9" />
 </head>
 
 <body>
@@ -636,8 +636,8 @@
     </form>
   </section>
 
-  <script src="js/main.js?v=8"></script>
-  <script src="js/chat.js?v=8"></script>
+  <script src="js/main.js?v=9"></script>
+  <script src="js/chat.js?v=9"></script>
 
   <!-- ===================== VAPI VOICE ASSISTANT (Web SDK · in-page orb) =====================
        The tap handler (classic script below) attaches IMMEDIATELY and is not gated on the
@@ -659,6 +659,23 @@
       var statusEl = document.getElementById("mcb-ai-status");
       if (!orb || !btn) return;
       function setStatus(t) { if (statusEl) statusEl.textContent = t || ""; }
+
+      // --- Tap diagnostics: add #debug to the URL, then tap the orb. A popup shows
+      //     exactly which element your finger hit (and whether the handler fired). ---
+      var DEBUG = (location.hash + location.search).indexOf("debug") > -1;
+      if (DEBUG) {
+        var ddesc = function (el) {
+          if (!el) return "(none)";
+          var cls = (el.getAttribute && el.getAttribute("class")) || "";
+          return "<" + (el.tagName || "?").toLowerCase() + "> id='" + (el.id || "") + "' class='" + cls + "'";
+        };
+        window.addEventListener("error", function (ev) {
+          alert("JS ERROR: " + (ev.message || (ev.error && ev.error.message) || ev));
+        });
+        document.addEventListener("pointerup", function (e) {
+          alert("Your tap landed on:\n" + ddesc(e.target) + "\n\n(the orb button has id='mcb-ai-start')");
+        }, true);
+      }
 
       var vapi = null, live = false, busy = false, ready = false, pendingStart = false;
 
@@ -710,6 +727,7 @@
       }
 
       function onTap() {
+        if (DEBUG) alert("onTap fired ✓  ready=" + ready + " busy=" + busy + " live=" + live);
         if (busy) return;
         if (live) { try { vapi.stop(); } catch (e) {} return; }
         if (!window.isSecureContext) { setStatus("Open the https:// link to use voice."); return; }
