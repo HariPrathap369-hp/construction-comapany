@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-  <link rel="stylesheet" href="css/styles.css?v=5" />
+  <link rel="stylesheet" href="css/styles.css?v=6" />
 </head>
 
 <body>
@@ -636,63 +636,96 @@
     </form>
   </section>
 
-  <script src="js/main.js?v=5"></script>
-  <script src="js/chat.js?v=5"></script>
+  <script src="js/main.js?v=6"></script>
+  <script src="js/chat.js?v=6"></script>
 
   <!-- ===================== VAPI VOICE ASSISTANT (Web SDK · in-page orb) =====================
-       Loads the official @vapi-ai/web SDK as an ES module from esm.sh (pinned).
-       The whole orb is the tap target, so it works reliably on desktop + mobile. -->
+       The tap handler (classic script below) attaches IMMEDIATELY and is not gated on the
+       SDK download, so a tap always responds on mobile. The module just loads the SDK and
+       signals readiness; if it's slow, the tap queues and auto-starts when it arrives. -->
   <script type="module">
     import Vapi from "https://esm.sh/@vapi-ai/web@2.5.2";
+    window.MCB_Vapi = Vapi;
+    window.dispatchEvent(new Event("mcb-vapi-ready"));
+  </script>
 
-    // Public IDs — safe to embed in the browser.
-    const PUBLIC_KEY   = "9a8c87d6-6c6f-4652-b069-e72d6893a795";
-    const ASSISTANT_ID = "c9f41513-fd33-4b62-b95a-5b0fa6300779";
+  <script>
+    (function () {
+      var PUBLIC_KEY   = "9a8c87d6-6c6f-4652-b069-e72d6893a795";
+      var ASSISTANT_ID = "c9f41513-fd33-4b62-b95a-5b0fa6300779";
 
-    const orb      = document.getElementById("mcb-ai-orb");
-    const btn      = document.getElementById("mcb-ai-start");
-    const statusEl = document.getElementById("mcb-ai-status");
-    const setStatus = (t) => { if (statusEl) statusEl.textContent = t || ""; };
+      var orb      = document.getElementById("mcb-ai-orb");
+      var btn      = document.getElementById("mcb-ai-start");
+      var statusEl = document.getElementById("mcb-ai-status");
+      if (!orb || !btn) return;
+      function setStatus(t) { if (statusEl) statusEl.textContent = t || ""; }
 
-    if (orb && btn) {
-      let vapi, live = false, busy = false;
-      try {
-        vapi = new Vapi(PUBLIC_KEY);
-      } catch (e) {
-        console.error("[Vapi] init failed", e);
-        setStatus("Assistant unavailable — please call us instead.");
-      }
+      var vapi = null, live = false, busy = false, ready = false, pendingStart = false;
 
-      if (vapi) {
-        vapi.on("call-start", () => { live = true;  busy = false; orb.classList.add("is-live");    setStatus("Live — start speaking"); });
-        vapi.on("call-end",   () => { live = false; busy = false; orb.classList.remove("is-live"); setStatus("Tap to talk again"); });
-        vapi.on("error", (e) => {
+      function initVapi() {
+        if (vapi || typeof window.MCB_Vapi !== "function") return;
+        try {
+          vapi = new window.MCB_Vapi(PUBLIC_KEY);
+        } catch (e) {
+          console.error("[Vapi] init failed", e);
+          setStatus("Assistant unavailable — please call us instead.");
+          return;
+        }
+        vapi.on("call-start", function () { live = true;  busy = false; orb.classList.add("is-live");    setStatus("Live — start speaking"); });
+        vapi.on("call-end",   function () { live = false; busy = false; orb.classList.remove("is-live"); setStatus("Tap to talk again"); });
+        vapi.on("error", function (e) {
           live = false; busy = false; orb.classList.remove("is-live");
-          const m = (e && (e.errorMsg || e.message || (e.error && (e.error.message || e.error)))) || "please try again";
+          var m = (e && (e.errorMsg || e.message || (e.error && (e.error.message || e.error)))) || "please try again";
           setStatus("Error: " + m); console.error("[Vapi] error", e);
         });
-
-        async function toggle() {
-          if (busy) return;
-          if (live) { try { vapi.stop(); } catch (e) {} return; }
-          if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            setStatus("Open in Chrome or Safari to allow the microphone."); return;
-          }
-          busy = true;
-          setStatus("Connecting…");
-          try {
-            await vapi.start(ASSISTANT_ID);
-          } catch (e) {
-            busy = false; console.error("[Vapi] start failed", e);
-            setStatus("Could not start — check mic permission, then tap again.");
-          }
-        }
-
-        // Make the whole orb (button + label) a tap target — easier to hit on mobile.
-        orb.style.cursor = "pointer";
-        orb.addEventListener("click", toggle);
+        ready = true;
+        if (pendingStart) { pendingStart = false; doStart(); }
       }
-    }
+
+      // Hook up the SDK as soon as the module signals it loaded (or if it already did).
+      window.addEventListener("mcb-vapi-ready", initVapi);
+      if (typeof window.MCB_Vapi === "function") initVapi();
+
+      function doStart() {
+        if (!vapi) return;
+        busy = true; setStatus("Connecting…");
+        try {
+          var p = vapi.start(ASSISTANT_ID);
+          if (p && p.catch) p.catch(function (e) {
+            busy = false; console.error("[Vapi] start failed", e);
+            setStatus("Couldn't start — allow the mic, then tap again.");
+          });
+        } catch (e) {
+          busy = false; console.error("[Vapi] start threw", e);
+          setStatus("Couldn't start — allow the mic, then tap again.");
+        }
+      }
+
+      function onTap() {
+        if (busy) return;
+        if (live) { try { vapi.stop(); } catch (e) {} return; }
+        if (!window.isSecureContext) { setStatus("Open the https:// site to use voice."); return; }
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          setStatus("Use Chrome or Safari to allow the microphone."); return;
+        }
+        if (!ready) {
+          // SDK still loading — queue the start and show feedback so it never feels dead.
+          pendingStart = true; setStatus("Loading assistant…"); initVapi();
+          setTimeout(function () {
+            if (pendingStart && !ready) { pendingStart = false; setStatus("Slow connection — tap again, or call us."); }
+          }, 9000);
+          return;
+        }
+        doStart();
+      }
+
+      // Attach to BOTH the native button (most reliable on iOS) and the container
+      // (so taps on the label/gap also work). The guard prevents a double-fire.
+      btn.addEventListener("click", function () { onTap(); });
+      orb.addEventListener("click", function (e) { if (e.target !== btn && !btn.contains(e.target)) onTap(); });
+      orb.style.cursor = "pointer";
+      setStatus("Tap to talk");
+    })();
   </script>
 </body>
 </html>
